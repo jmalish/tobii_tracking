@@ -1,0 +1,15 @@
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\tobii_tracker.exe.config
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\tobii_tracker.exe
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\tobii_tracker.pdb
+D:\projects\tobii_tracker\tobii_tracker\obj\Debug\tobii_tracker.exe
+D:\projects\tobii_tracker\tobii_tracker\obj\Debug\tobii_tracker.pdb
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\tobii_firmware_upgrade.dll
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\tobii_pro.dll
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\tobii_stream_engine.dll
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\Tobii.Research.dll
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\Tobii.Research.xml
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\Tobii.EyeX.Client.dll
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\Tobii.Interaction.Model.dll
+D:\projects\tobii_tracker\tobii_tracker\bin\Debug\Tobii.Interaction.Net.dll
+D:\projects\tobii_tracker\tobii_tracker\obj\Debug\tobii_tracker.csproj.CoreCompileInputs.cache
+D:\projects\tobii_tracker\tobii_tracker\obj\Debug\tobii_tracker.csprojResolveAssemblyReference.cache
