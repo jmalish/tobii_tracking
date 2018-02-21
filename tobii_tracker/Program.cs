@@ -11,7 +11,7 @@ namespace tobii_tracker
     {
         static void Main(string[] args)
         {
-            bool testing = true;
+            bool testing = false;
 
             var host = new Host();
             var gazePointDataStream = host.Streams.CreateGazePointDataStream();

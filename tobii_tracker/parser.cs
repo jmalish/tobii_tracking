@@ -31,21 +31,29 @@ namespace tobii_tracker
             #region reading file
             using (StreamReader sr = new StreamReader(myFile))
             {
+                var totalLineCount = sr.ReadToEnd().Split('\n').Count(); // get total number of lines in file
+                sr.DiscardBufferedData();                                // doing this puts us at the end of the file, so we need to
+                sr.BaseStream.Seek(0, SeekOrigin.Begin);                 // go back to start of file
+
                 string line;
                 sr.ReadLine(); // skip first line (contains headers)
                 while ((line = sr.ReadLine()) != null)
                 {   // 0,0 is top left
-                    lineCount++;
-                    //int x = Decimal.ToInt32(Math.Round(decimal.Parse(line.Split(',')[1]))); // just, uhh, look somewhere else
-                    //int y = Decimal.ToInt32(Math.Round(decimal.Parse(line.Split(',')[2]))); // seriously, please
-
                     int x = getXcoord(line);
                     int y = getYcoord(line);
 
                     //Console.WriteLine("x: {0}, y:{1}", x, y);
 
                     addDataPoints(coords, x, y);
-                    
+
+                    lineCount++;
+                    if (lineCount % 1000 == 0)
+                    {
+                        Console.Clear();
+                        decimal linesReadPercentage = Convert.ToDecimal(lineCount) / Convert.ToDecimal(totalLineCount) * 100;
+                        Console.WriteLine("Reading file: {0}%", Math.Round(linesReadPercentage, 0));
+                    }
+
                 }
                 Console.WriteLine("File parsed with {0} lines read, writing parsed data to {1}", lineCount, parsedFile);
             }
@@ -133,7 +141,7 @@ namespace tobii_tracker
             Coordinate centerPoint = new Coordinate(centerX, centerY);
             Coordinate pointToCheck = new Coordinate();
 
-            int circleRadius = 10;  // radius is also used for the "score" of the point
+            int circleRadius = 50;  // radius is also used for the "score" of the point
 
             for (int x = centerX - circleRadius; x < centerX + circleRadius; x++)
             {
@@ -141,11 +149,17 @@ namespace tobii_tracker
                 {
                     pointToCheck.setCoords(x, y);
 
-                    int dist = centerPoint.getDistanceFromPoint(pointToCheck);
-
-                    if (dist < circleRadius)
+                    if (pointToCheck.X >= 0 && pointToCheck.X < 1920)
                     {
-                        _coords[x, y] = circleRadius - dist;
+                        if (pointToCheck.Y >= 0 && pointToCheck.Y < 1080)
+                        {
+                            int dist = centerPoint.getDistanceFromPoint(pointToCheck);
+
+                            if (dist < circleRadius)
+                            {
+                                _coords[x, y] = _coords[x, y] + circleRadius - dist;
+                            }
+                        }
                     }
                 }
             }
