@@ -44,15 +44,7 @@ namespace tobii_tracker
 
                     //Console.WriteLine("x: {0}, y:{1}", x, y);
 
-                    try
-                    {
-                        coords[x, y]++;
-                    }
-                    catch (Exception exc)
-                    {
-                        Console.WriteLine(exc.Message);
-                        Console.WriteLine("x: {0}, y:{1}", x, y);
-                    }
+                    addDataPoints(coords, x, y);
                     
                 }
                 Console.WriteLine("File parsed with {0} lines read, writing parsed data to {1}", lineCount, parsedFile);
@@ -69,14 +61,14 @@ namespace tobii_tracker
                 for (int y = 0; y < coords.GetLength(1); y++)
                 {
                     sw.Write(coords[x, y]);
-                    if (y != coords.GetLength(1) - 1)
+                    dataPointCount = dataPointCount + coords[x, y];
+                    if (y != coords.GetLength(1) - 1) 
                     {
                         sw.Write(",");
-                        dataPointCount = dataPointCount + coords[x, y];
                     }
                 }
                 sw.Write("]");
-                if (x != coords.GetLength(0) - 1)
+                if (x != coords.GetLength(0) - 1) // keep from putting a comma at the end of the line
                 {
                     sw.Write(",");
                 }
@@ -134,6 +126,56 @@ namespace tobii_tracker
 
             //Console.WriteLine("y: {0}", y);
             return y;
+        }
+
+        void addDataPoints(int[,] _coords, int centerX, int centerY)
+        {
+            Coordinate centerPoint = new Coordinate(centerX, centerY);
+            Coordinate pointToCheck = new Coordinate();
+
+            int circleRadius = 10;  // radius is also used for the "score" of the point
+
+            for (int x = centerX - circleRadius; x < centerX + circleRadius; x++)
+            {
+                for (int y = centerY - circleRadius; y < centerY + circleRadius; y++)
+                {
+                    pointToCheck.setCoords(x, y);
+
+                    int dist = centerPoint.getDistanceFromPoint(pointToCheck);
+
+                    if (dist < circleRadius)
+                    {
+                        _coords[x, y] = circleRadius - dist;
+                    }
+                }
+            }
+        }
+    }
+
+    public struct Coordinate
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public Coordinate(int _x, int _y)
+        {
+            X = _x;
+            Y = _y;
+        }
+
+        public void setCoords(int _x, int _y)
+        {
+            X = _x;
+            Y = _y;
+        }
+
+        public int getDistanceFromPoint(Coordinate _checkedPoint)
+        {
+            double distX = Math.Pow(_checkedPoint.X - this.X, 2);
+            double disty = Math.Pow(_checkedPoint.Y - this.Y, 2);
+            double distFinal = Math.Sqrt(distX + disty);
+
+            return Convert.ToInt32(Math.Round(distFinal, 0));
         }
     }
 }
