@@ -20,38 +20,36 @@ namespace tobii_tracker
 
         public bool ParseData()
         {
-            int[,] coords = new int[1920,1080];
-            string myFile = FileLocation + "\\eyetracks\\" + FileName + ".csv";
-            string parsedFile = FileLocation + "\\eyetracks\\" + FileName + "_parsed.json";
-            int lineCount = 0;
-            int dataPointCount = 0;
+            int[,] coords = new int[1920,1080]; // create grid, 1920x1080, same as monitor size
+            string myFile = FileLocation + "\\eyetracks\\" + FileName + ".csv"; // create string to access file location
+            string parsedFile = FileLocation + "\\eyetracks\\" + FileName + "_parsed.json"; // string to write file, just file location with _parsed on the end
+            int lineCount = 0; // holds number of lines, just informational
+            double dataPointCount = 0; // holds number of data points, informational
 
             Console.WriteLine("Reading file {0}", myFile);
 
             #region reading file
-            using (StreamReader sr = new StreamReader(myFile))
+            using (StreamReader sr = new StreamReader(myFile))  // create stream reader
             {
                 var totalLineCount = sr.ReadToEnd().Split('\n').Count(); // get total number of lines in file
                 sr.DiscardBufferedData();                                // doing this puts us at the end of the file, so we need to
                 sr.BaseStream.Seek(0, SeekOrigin.Begin);                 // go back to start of file
 
-                string line;
+                string line; // this will store the line that the loop below saves and reads from
                 sr.ReadLine(); // skip first line (contains headers)
-                while ((line = sr.ReadLine()) != null)
+                while ((line = sr.ReadLine()) != null) // loop through all lines in the file
                 {   // 0,0 is top left
-                    int x = getXcoord(line);
-                    int y = getYcoord(line);
+                    int x = getXcoord(line); // get the x coordinate
+                    int y = getYcoord(line); // get the y coord
 
-                    //Console.WriteLine("x: {0}, y:{1}", x, y);
+                    addDataPoints(coords, x, y); // add datapoint to grid
 
-                    addDataPoints(coords, x, y);
-
-                    lineCount++;
-                    if (lineCount % 1000 == 0)
+                    lineCount++; // mark line as read, informational
+                    if (lineCount % 1000 == 0) // in order to keep from refreshing console every millisecond and locking things up, just run every 1000 lines
                     {
-                        Console.Clear();
-                        decimal linesReadPercentage = Convert.ToDecimal(lineCount) / Convert.ToDecimal(totalLineCount) * 100;
-                        Console.WriteLine("Reading file: {0}%", Math.Round(linesReadPercentage, 0));
+                        Console.Clear(); // clear console to keep from spamming the window
+                        decimal linesReadPercentage = Convert.ToDecimal(lineCount) / Convert.ToDecimal(totalLineCount) * 100; // basic math to get percentage
+                        Console.WriteLine("Reading file: {0}%", Math.Round(linesReadPercentage, 0)); // write percentage to console
                     }
 
                 }
@@ -61,28 +59,28 @@ namespace tobii_tracker
 
 
             #region write to file
-            StreamWriter sw = new StreamWriter(parsedFile);
-            sw.Write("[");
-            for (int x = coords.GetLength(0) - 1; x >= 0; x--) // TODO: test
+            StreamWriter sw = new StreamWriter(parsedFile); // create stream writer to create file
+            sw.Write("["); // opening bracket for whole file
+            for (int x = coords.GetLength(0) - 1; x >= 0; x--) // loop through all the columns, start from top and work down since plotly goes bottom up
             {
-                sw.Write("[");
-                for (int y = 0; y < coords.GetLength(1); y++)
+                sw.Write("["); // opening bracket for individual line
+                for (int y = 0; y < coords.GetLength(1); y++) // loop through pixel in row, left to right
                 {
-                    sw.Write(coords[x, y]);
-                    dataPointCount = dataPointCount + coords[x, y];
-                    if (y != coords.GetLength(1) - 1) 
+                    sw.Write(coords[x, y]); // write coordinate info to file
+                    dataPointCount++; // update data point count, this probably isn't really helpful anymore, informational
+                    if (y != coords.GetLength(1) - 1)  // in order to keep from placing a comma after the last pixel
                     {
-                        sw.Write(",");
+                        sw.Write(","); // place comma to seperate point
                     }
                 }
-                sw.Write("]");
+                sw.Write("]"); // closing bracket for line
                 if (x != 0) // keep from putting a comma at the end of the line
                 {
-                    sw.Write(",");
+                    sw.Write(","); // comma to seperate lines
                 }
             }
-            sw.Write("]");
-            sw.Close();
+            sw.Write("]"); // closing bracket for file
+            sw.Close(); // close stream writer
             #endregion write to file
 
             Console.WriteLine("{0} data points created.", dataPointCount);
@@ -92,10 +90,11 @@ namespace tobii_tracker
 
         int getXcoord(string line)
         {
-            string xStr = line.Split(',')[1];
-            decimal xDec = Decimal.Parse(xStr);
-            xDec = Math.Round(xDec, 0);
+            string xStr = line.Split(',')[1]; // get x coordinate from line
+            decimal xDec = Decimal.Parse(xStr); // convert string to decimal
+            xDec = Math.Round(xDec, 0); // round to nearest whole number
 
+            // this section is to keep from trying to write to coordinates that don't exist, therefore avoiding index out of bound errors
             if (xDec < 1)
             {
                 xDec = 1;
@@ -105,20 +104,20 @@ namespace tobii_tracker
                 xDec = 1920;
             }
 
-            xDec = xDec - 1;
+            xDec = xDec - 1; // subtract 1 to get us in line with the 0 indexness of c#
 
-            int x = Convert.ToInt32(xDec);
-
-            //Console.WriteLine("x: {0}", x);
+            int x = Convert.ToInt32(xDec); // convert to integer
+            
             return x;
         }
 
         int getYcoord(string line)
         {
-            string yStr = line.Split(',')[2];
-            decimal yDec = Decimal.Parse(yStr);
-            yDec = Math.Round(yDec, 0);
+            string yStr = line.Split(',')[2]; // get y coordinate from line
+            decimal yDec = Decimal.Parse(yStr); // convert string to decimal
+            yDec = Math.Round(yDec, 0); // round to nearest whole number
 
+            // this section is to keep from trying to write to coordinates that don't exist, therefore avoiding index out of bound errors
             if (yDec < 1)
             {
                 yDec = 1;
@@ -128,36 +127,37 @@ namespace tobii_tracker
                 yDec = 1080;
             }
 
-            yDec = yDec - 1;
+            yDec = yDec - 1; // subtract 1 to get us in line with the 0 indexness of c#
 
-            int y = Convert.ToInt32(yDec);
-
-            //Console.WriteLine("y: {0}", y);
+            int y = Convert.ToInt32(yDec); // convert to integer
+            
             return y;
         }
 
         void addDataPoints(int[,] _coords, int centerX, int centerY)
         {
-            Coordinate centerPoint = new Coordinate(centerX, centerY);
-            Coordinate pointToCheck = new Coordinate();
+            Coordinate centerPoint = new Coordinate(centerX, centerY); // this is the central point
+            Coordinate pointToCheck = new Coordinate(); // this is used for the point we check against
 
-            int circleRadius = 25;  // radius is also used for the "score" of the point
+            int circleRadius = 25;  // radius is also used for the "score" of the point, the larger the radius, the slower the program goes
 
+            // this section pretty much looks at the surrounding SQUARE of pixels, we then use the pythagorean theorom to find if the given coordinate
+            // is too far away, if it is, we ignore it, if not, give it the correct point value
             for (int x = centerX - circleRadius; x < centerX + circleRadius; x++)
             {
                 for (int y = centerY - circleRadius; y < centerY + circleRadius; y++)
                 {
-                    pointToCheck.setCoords(x, y);
+                    pointToCheck.setCoords(x, y); // set coordinates using the for loop placement
 
-                    if (pointToCheck.X >= 0 && pointToCheck.X < 1920)
+                    if (pointToCheck.X >= 0 && pointToCheck.X < 1920) // make sure the point we're checking is even on the board
                     {
-                        if (pointToCheck.Y >= 0 && pointToCheck.Y < 1080)
+                        if (pointToCheck.Y >= 0 && pointToCheck.Y < 1080) // and again
                         {
-                            int dist = centerPoint.getDistanceFromPoint(pointToCheck);
+                            int dist = centerPoint.getDistanceFromPoint(pointToCheck); // find the distance from the central point (pythagorean theorom
 
-                            if (dist < circleRadius)
+                            if (dist < circleRadius) // if it's farther than the radius, ignore it
                             {
-                                _coords[x, y] = _coords[x, y] + circleRadius - dist;
+                                _coords[x, y] = _coords[x, y] + circleRadius - dist; // if it's within the radius, give it a point value depending on it's distance from central point
                             }
                         }
                     }
@@ -185,36 +185,12 @@ namespace tobii_tracker
 
         public int getDistanceFromPoint(Coordinate _checkedPoint)
         {
-            double distX = Math.Pow(_checkedPoint.X - this.X, 2);
-            double disty = Math.Pow(_checkedPoint.Y - this.Y, 2);
-            double distFinal = Math.Sqrt(distX + disty);
+            // distance formula is (x2-x1)^2+(y2-y1)^2, and then take the square root of that
+            double distX = Math.Pow(_checkedPoint.X - this.X, 2); // x2 - x1, then squared
+            double disty = Math.Pow(_checkedPoint.Y - this.Y, 2); // y2 - y1, then squared
+            double distFinal = Math.Sqrt(distX + disty); // take the previous two lines and get the square root
 
-            return Convert.ToInt32(Math.Round(distFinal, 0));
+            return Convert.ToInt32(Math.Round(distFinal, 0)); // conver to int and return
         }
     }
 }
-
-
-
-
-
-//sw.Write("[");
-//            for (int y = 0; y<coords.GetLength(1); y++) // y
-//            {
-//                sw.Write("[");
-//                for (int x = 0; x<coords.GetLength(1); x++) // x
-//                {
-//                    // Console.WriteLine("{0}, {1}: {2}", x, y, coords[x, y]);
-//                    sw.Write(coords[x, y]);
-//                    if (x != coords.GetLength(1) - 1)
-//                    {
-//                        sw.Write(",");
-//                    }
-//                }
-//                sw.Write("]");
-//                if (y != coords.GetLength(0) - 1)
-//                {
-//                    sw.Write(",");
-//                }
-//            }
-//            sw.Write("]");
