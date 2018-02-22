@@ -11,7 +11,7 @@ namespace tobii_tracker
     {
         static void Main(string[] args)
         {
-            bool testing = false;
+            bool testing = false; // setting this to true skips the eye recording part, useful for testing the parser
 
             var host = new Host();
             var gazePointDataStream = host.Streams.CreateGazePointDataStream();

@@ -63,7 +63,7 @@ namespace tobii_tracker
             #region write to file
             StreamWriter sw = new StreamWriter(parsedFile);
             sw.Write("[");
-            for (int x = 0; x < coords.GetLength(0); x++)
+            for (int x = coords.GetLength(0) - 1; x >= 0; x--) // TODO: test
             {
                 sw.Write("[");
                 for (int y = 0; y < coords.GetLength(1); y++)
@@ -76,7 +76,7 @@ namespace tobii_tracker
                     }
                 }
                 sw.Write("]");
-                if (x != coords.GetLength(0) - 1) // keep from putting a comma at the end of the line
+                if (x != 0) // keep from putting a comma at the end of the line
                 {
                     sw.Write(",");
                 }
@@ -141,7 +141,7 @@ namespace tobii_tracker
             Coordinate centerPoint = new Coordinate(centerX, centerY);
             Coordinate pointToCheck = new Coordinate();
 
-            int circleRadius = 50;  // radius is also used for the "score" of the point
+            int circleRadius = 25;  // radius is also used for the "score" of the point
 
             for (int x = centerX - circleRadius; x < centerX + circleRadius; x++)
             {
