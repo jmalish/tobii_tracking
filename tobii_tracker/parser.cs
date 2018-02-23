@@ -139,7 +139,7 @@ namespace tobii_tracker
             Coordinate centerPoint = new Coordinate(centerX, centerY); // this is the central point
             Coordinate pointToCheck = new Coordinate(); // this is used for the point we check against
 
-            int circleRadius = 25;  // radius is also used for the "score" of the point, the larger the radius, the slower the program goes
+            int circleRadius = 25;  // the larger the radius, the slower the program goes, see below for more info
 
             // this section pretty much looks at the surrounding SQUARE of pixels, we then use the pythagorean theorom to find if the given coordinate
             // is too far away, if it is, we ignore it, if not, give it the correct point value
@@ -157,7 +157,10 @@ namespace tobii_tracker
 
                             if (dist < circleRadius) // if it's farther than the radius, ignore it
                             {
-                                _coords[x, y] = _coords[x, y] + circleRadius - dist; // if it's within the radius, give it a point value depending on it's distance from central point
+                                // the first line will set the value of the center point to it's current value, plus the radius of the circle, doing down one point as it gets further away
+                                // _coords[x, y] = _coords[x, y] + circleRadius - dist; // if it's within the radius, give it a point value depending on it's distance from central point
+                                // this line just adds one point to the coordinates score, causing a perfectly "flat" circle instead of the "cone" of values
+                                _coords[x, y]++; // if it's within the radius, give it a point value depending on it's distance from central point
                             }
                         }
                     }

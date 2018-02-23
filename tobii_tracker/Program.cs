@@ -11,12 +11,15 @@ namespace tobii_tracker
     {
         static void Main(string[] args)
         {
-            bool testing = false; // setting this to true skips the eye recording part, useful for testing the parser
+            bool parseOnly = false; // setting this to true skips the data recording, and goes straight to parsing a given file
 
             var host = new Host(); // create tobii host
             var gazePointDataStream = host.Streams.CreateGazePointDataStream(); // create data stream from host
             
-            Console.Write("Please enter name of file to be created (Leave empty to name as date): "); 
+            Console.Write("Please enter name of file to be created\n" +
+                "Leave empty to name as date\n" +
+                "Or enter 'parse' to parse an existing file, skipping the data recording\n\n" +
+                "File Name: "); 
 
             #region write full data to file
             string fileName = Console.ReadLine(); // get file name from user
@@ -24,10 +27,16 @@ namespace tobii_tracker
             {
                 fileName = DateTime.Now.ToString("dd_mm_yyyy_hh_mm_ss"); // just name the file the current date and time
             }
+            else if (fileName.ToLower() == "parse")
+            {
+                parseOnly = true;
+                Console.Write("\n\nEnter name of file to parse:");
+                fileName = Console.ReadLine();
+            }
 
             string fileLocation = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory); // get desktop
             Directory.CreateDirectory(fileLocation + "\\eyetracks"); // create the 'eyetracks' directory on the desktop, if it exists this is ignored
-            if (!testing)
+            if (!parseOnly) // if parseOnly is true, we don't need to record data, so skip this section
             {
                 string myFile = fileLocation + "\\eyetracks\\" + fileName + ".csv"; // create string to point to file
 
