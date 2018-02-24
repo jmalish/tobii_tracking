@@ -12,6 +12,7 @@ namespace tobii_tracker
         static void Main(string[] args)
         {
             bool parseOnly = false; // setting this to true skips the data recording, and goes straight to parsing a given file
+            string desktopLocation = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory); // get desktop location
 
             var host = new Host(); // create tobii host
             var gazePointDataStream = host.Streams.CreateGazePointDataStream(); // create data stream from host
@@ -32,13 +33,20 @@ namespace tobii_tracker
                 parseOnly = true;
                 Console.Write("\n\nEnter name of file to parse:");
                 fileName = Console.ReadLine();
+            } else if (File.Exists(desktopLocation + "\\eyetracks\\" + fileName + ".csv"))
+            {
+                Console.WriteLine("That file name already exists." +
+                    "To overwrite that file, enter 'y', otherwise enter 'n' to parse the existing file:");
+                if (Console.ReadLine() != "y") // if user enters 'y', they want to overwrite file
+                {
+                    parseOnly = true; // otherwise skip file writing and parse
+                }
             }
-
-            string fileLocation = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory); // get desktop
-            Directory.CreateDirectory(fileLocation + "\\eyetracks"); // create the 'eyetracks' directory on the desktop, if it exists this is ignored
+            
+            Directory.CreateDirectory(desktopLocation + "\\eyetracks"); // create the 'eyetracks' directory on the desktop, if it exists this is ignored
             if (!parseOnly) // if parseOnly is true, we don't need to record data, so skip this section
             {
-                string myFile = fileLocation + "\\eyetracks\\" + fileName + ".csv"; // create string to point to file
+                string myFile = desktopLocation + "\\eyetracks\\" + fileName + ".csv"; // create string to point to file
 
                 StreamWriter sw = new StreamWriter(myFile); // create stream writer
 
@@ -61,7 +69,7 @@ namespace tobii_tracker
 
             try
             {
-                Parser parser = new Parser(fileLocation, fileName); // create parser
+                Parser parser = new Parser(desktopLocation, fileName); // create parser
                 if (parser.ParseData()) // tell the parser to do it's thing, it returns a bool that basically says if it was succesful or not
                 {
                     Console.WriteLine("\nData parsed, press any key to exit...");
