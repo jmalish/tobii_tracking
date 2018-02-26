@@ -1,2 +1,3 @@
 .vs
 tobii_tracker/bin/*
+tobii_tracker/obj/*
