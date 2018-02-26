@@ -36,8 +36,8 @@ namespace tobii_tracker
             } else if (File.Exists(desktopLocation + "\\eyetracks\\" + fileName + ".csv"))
             {
                 Console.WriteLine("That file name already exists." +
-                    "To overwrite that file, enter 'y', otherwise enter 'n' to parse the existing file:");
-                if (Console.ReadLine() != "y") // if user enters 'y', they want to overwrite file
+                    "To overwrite that file, enter 'overwrite', otherwise enter 'n' to parse the existing file:");
+                if (Console.ReadLine().ToLower() != "overwrite") // if user enters 'y', they want to overwrite file
                 {
                     parseOnly = true; // otherwise skip file writing and parse
                 }

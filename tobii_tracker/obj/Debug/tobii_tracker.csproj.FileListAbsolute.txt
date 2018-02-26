@@ -12,4 +12,3 @@ D:\projects\tobii_tracker\tobii_tracker\bin\Debug\Tobii.EyeX.Client.dll
 D:\projects\tobii_tracker\tobii_tracker\bin\Debug\Tobii.Interaction.Model.dll
 D:\projects\tobii_tracker\tobii_tracker\bin\Debug\Tobii.Interaction.Net.dll
 D:\projects\tobii_tracker\tobii_tracker\obj\Debug\tobii_tracker.csproj.CoreCompileInputs.cache
-D:\projects\tobii_tracker\tobii_tracker\obj\Debug\tobii_tracker.csprojResolveAssemblyReference.cache

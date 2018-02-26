@@ -42,7 +42,10 @@ namespace tobii_tracker
                     int x = getXcoord(line); // get the x coordinate
                     int y = getYcoord(line); // get the y coord
 
-                    addDataPoints(coords, x, y); // add datapoint to grid
+                    if (x >= 0 && y >= 0)
+                    {
+                        addDataPoints(coords, x, y); // add datapoint to grid
+                    }
 
                     lineCount++; // mark line as read, informational
                     if (lineCount % 1000 == 0) // in order to keep from refreshing console every millisecond and locking things up, just run every 1000 lines
@@ -53,6 +56,8 @@ namespace tobii_tracker
                     }
 
                 }
+                Console.Clear();
+                Console.WriteLine("Reading file: 100%");
                 Console.WriteLine("File parsed with {0} lines read, writing parsed data to {1}", lineCount, parsedFile);
             }
             #endregion reading file
@@ -94,14 +99,9 @@ namespace tobii_tracker
             decimal xDec = Decimal.Parse(xStr); // convert string to decimal
             xDec = Math.Round(xDec, 0); // round to nearest whole number
 
-            // this section is to keep from trying to write to coordinates that don't exist, therefore avoiding index out of bound errors
-            if (xDec < 1)
+            if (xDec < 1 || xDec > 1920) // if a coordinate has a value that's out of range, just delete it
             {
-                xDec = 1;
-            }
-            else if (xDec > 1920)
-            {
-                xDec = 1920;
+                xDec = -1;
             }
 
             xDec = xDec - 1; // subtract 1 to get us in line with the 0 indexness of c#
@@ -117,14 +117,9 @@ namespace tobii_tracker
             decimal yDec = Decimal.Parse(yStr); // convert string to decimal
             yDec = Math.Round(yDec, 0); // round to nearest whole number
 
-            // this section is to keep from trying to write to coordinates that don't exist, therefore avoiding index out of bound errors
-            if (yDec < 1)
+            if (yDec < 1 || yDec > 1080) // if a coordinate has a value that's out of range, just delete it
             {
-                yDec = 1;
-            }
-            else if (yDec > 1080)
-            {
-                yDec = 1080;
+                yDec = -1;
             }
 
             yDec = yDec - 1; // subtract 1 to get us in line with the 0 indexness of c#
